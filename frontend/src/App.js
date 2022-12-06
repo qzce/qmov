@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 import axios from 'axios';
-import AccountInput from "./components/AccountInput"
+import Main from './Main';
+import Login from './Login';
+import Account from './Account';
+import About from './About';
+import ErrorPage from './ErrorPage';
 
 function Header() {
   return <header>
@@ -9,11 +14,11 @@ function Header() {
   </header>
 }
 
-function Nav() {
+function Nav(props) {
   return <ol>
-    <li><a href="/account">회원가입</a></li>
-    <li><a href="/login">로그인</a></li>
-    <li><a href="/about">about</a></li>
+    <li><a href={props.url.accountUrl}>회원가입</a></li>
+    <li><a href={props.url.loginUrl}>로그인</a></li>
+    <li><a href={props.url.aboutUrl}>about</a></li>
   </ol>
 }
 
@@ -21,6 +26,14 @@ function App() {
 
   const baseUrl = "http://localhost:8080"
 
+  const myUrl = {
+    mainUrl : "/",
+    loginUrl : "/login",
+    accountUrl : "/account",
+    aboutUrl : "/about",
+  }
+
+  // 경로 설정
   const [id, setId] = useState("")
   const [pw, setPw] = useState("")
 
@@ -45,12 +58,11 @@ function App() {
 
     const makeSign =  async () => {
       await axios
-        .post(baseUrl + "/account", {
+        .post(baseUrl + myUrl.accountUrl, {
           name: id,
           password: pw
         })
         .then((response) => {
-          console.log(response.data)
           setId("");
           setPw("");
           getAccounts();
@@ -75,13 +87,21 @@ function App() {
 
   return (
     <div className="App">
-      <Header></Header>
-      <Nav></Nav>
-      <AccountInput handleSubmit={createAccount}
-        id={id}
-        pw={pw}
-        handleChange={handleChange}
-      />
+      <Header/>
+      <Nav url={myUrl}/>
+      <BrowserRouter>
+        <Routes>
+          <Route path="*" element={<ErrorPage/>}></Route>
+          <Route path={myUrl.mainUrl} element={<Main/>}></Route>
+          <Route path={myUrl.loginUrl} element={<Login/>}></Route>
+          <Route path={myUrl.aboutUrl} element={<About/>}></Route>
+          <Route path={myUrl.accountUrl} element={<Account handleSubmit={createAccount}
+              id={id}
+              pw={pw}
+              handleChange={handleChange}
+            />}></Route>
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }

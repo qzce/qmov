@@ -1,4 +1,6 @@
-function AccountInput(props) {
+import React from "react";
+
+function Account(props) {
     return (
       <div>
         <h1>회원가입</h1>
@@ -12,4 +14,4 @@ function AccountInput(props) {
 
 }
 
-export default AccountInput;
+export default Account;
